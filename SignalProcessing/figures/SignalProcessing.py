@@ -7,7 +7,7 @@ class Main:
 
     def __init__(self):
         self.n = 500
-        self.Fs = 100
+        self.Fs = 1000
         self.FMax = 3
 
     def main(self):
