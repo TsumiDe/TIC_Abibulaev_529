@@ -19,7 +19,7 @@ class Main:
         self.tag = tag
 
     def main(self, results):
-        originalSequence = None
+        originalSequence = ''
         if self.typeNumber == "First":
             originalSequence = [i for i in list(self.firstValue)] + [self.secondValue for _ in
                                                                      range(self.sequenceN - len(self.firstValue))]
@@ -30,8 +30,11 @@ class Main:
         elif self.typeNumber == "Fourth":
             originalSequence = [random.choice(self.firstValue) for _ in range(int(self.p[0] * self.sequenceN))] + \
                                [random.choice(self.secondValue) for _ in range(int(self.p[1] * self.sequenceN))]
+        elif self.typeNumber == "Fifth":
+            originalSequence = list(self.firstValue) * 20
         if self.shuffle:
             random.shuffle(originalSequence)
+        originalSequence = ''.join(originalSequence)
         sequenceAlphabetSize = len(set(originalSequence))
         originalSequenceSize = len(originalSequence)
         self.originalSequences.append(originalSequence)
@@ -79,7 +82,7 @@ def main():
             {"firstValue": "Абібулаєв", "secondValue": '0', "shuffle": True, "type": "First", "p": None, "tag": 'a'},
             {"firstValue": "Абібулаєв529", "secondValue": None, "shuffle": False, "type": "Second", "p": None,
              "tag": 'a'},
-            {"firstValue": "Аб529", "secondValue": None, "shuffle": True, "type": "Third", "p": [0.2, 0.2], "tag": 'a'},
+            {"firstValue": "Аб529", "secondValue": None, "shuffle": True, "type": "Fifth", "p": None, "tag": 'a'},
             {"firstValue": "Аб", "secondValue": "529", "shuffle": True, "type": "Fourth", "p": [0.7, 0.3], "tag": 'a'},
             {"firstValue": ascii_lowercase + digits, "secondValue": None, "shuffle": True, "type": "Third", "p": None,
              "tag": 'a'},
