@@ -12,7 +12,6 @@ class Main:
         self.compressionRatioLZW = None
 
     def main(self):
-        self.readTxt()
         results = []
         for sequence in self.readTxt():
             counts = collections.Counter(sequence)
@@ -35,24 +34,25 @@ class Main:
     def encodeRLE(self, sequence):
         score: int = 1
         sequenceEncodeRLE = []
-        for indexSymbol in range(len(sequence)):
-            try:
-                if sequence[indexSymbol] == sequence[indexSymbol + 1]:
-                    score += 1
-                else:
-                    sequenceEncodeRLE.append([score, sequence[indexSymbol]])
-                    score = 1
-            except IndexError:
-                sequenceEncodeRLE.append([score, sequence[indexSymbol]])
-        self.compressionRatioRLE = round((len(sequence) / len(sequenceEncodeRLE)), 2)
+        for index, item in enumerate(sequence):
+            if index == 0:
+                continue
+            elif item == sequence[index - 1]:
+                score += 1
+            else:
+                sequenceEncodeRLE.append((sequence[index - 1], score))
+                score = 1
+        sequenceEncodeRLE.append((sequence[len(sequence) - 1], score))
+        encoded = "".join([f"{item[1]}{item[0]}" for item in sequenceEncodeRLE])
+        self.compressionRatioRLE = round((len(sequence) / len(encoded)), 2)
         self.compressionRatioRLE = '-' if self.compressionRatioRLE < 1 else self.compressionRatioRLE
-        return sequenceEncodeRLE
+        return encoded, sequenceEncodeRLE
 
     def decodeRLE(self, sequenceEncodeRLE):
-        sequenceDecodeRLE = ''.join([symbol[0] * symbol[-1] for symbol in sequenceEncodeRLE])
+        sequenceDecodeRLE = ''.join([symbol[0] * symbol[-1] for symbol in sequenceEncodeRLE[1]])
         self.writeTXT(text=f"_______Кодування RLE_______\n"
-                           f"Закодована RLE послідовність: {''.join(['{}{}'.format(seq[0], seq[1]) for seq in sequenceEncodeRLE])}\n"
-                           f"Розмір закодованої RLE послідовності: {str(len(sequenceEncodeRLE) * 16)} bits\n"
+                           f"Закодована RLE послідовність: {sequenceEncodeRLE[0]}\n"
+                           f"Розмір закодованої RLE послідовності: {str(len(sequenceEncodeRLE[0]) * 16)} bits\n"
                            f"Коефіцієнт стиснення RLE: {str(self.compressionRatioRLE)}\n"
                            f"Декодована RLE послідовність: {sequenceDecodeRLE}\n"
                            f"Розмір декодованої RLE послідовності: {str(len(sequenceDecodeRLE) * 16)} bits\n"
@@ -82,7 +82,7 @@ class Main:
         self.writeTXT(text=f"Code: {dictionary[current]}, Element: {current}, bits: {last}\n"
                            f"____________________________________\n")
         result.append(dictionary[current])
-        self.compressionRatioLZW = round((len(sequence) / size), 2)
+        self.compressionRatioLZW = round((len(sequence) * 16 / size), 2)
         self.compressionRatioLZW = '-' if self.compressionRatioLZW < 1 else self.compressionRatioLZW
         self.writeTXT(text=f"Закодована LZW послідовність: {''.join(map(str, result))} \n"
                            f"Розмір закодованої LZW послідовності: {size} bits \n"
