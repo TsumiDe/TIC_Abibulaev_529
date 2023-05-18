@@ -51,7 +51,8 @@ class Modulation:
 
     @classmethod
     def ask_demodulation(cls, frequency, sequence):
-        ask_demodulated_signal = sequence_demodulated = np.zeros(1000)
+        ask_demodulated_signal = np.zeros(1000)
+        sequence_demodulated = np.zeros(1000)
         threshold = np.ones(1000) * 25
         ask_product = [sequence[i] * cos(2 * pi * frequency * i / 1000) for i in range(0, len(sequence))]
         for i in range(0, 10):
@@ -95,9 +96,14 @@ class Modulation:
 
     @classmethod
     def fsk_demodulation(cls, frequency1, frequency2, sequence):
-        fskDemodulatedSignal1 = fskDemodulatedSignal2 = sequenceDemodulated = np.zeros(1000)
-        fskProduct1 = [sequence[i] * sin(2 * pi * frequency1 * i / 1000) for i in range(0, len(sequence))]
-        fskProduct2 = [sequence[i] * sin(2 * pi * frequency2 * i / 1000) for i in range(0, len(sequence))]
+        fskDemodulatedSignal1 = np.zeros(1000)
+        fskDemodulatedSignal2 = np.zeros(1000)
+        sequenceDemodulated = np.zeros(1000)
+        fskProduct1 = np.zeros(1000)
+        fskProduct2 = np.zeros(1000)
+        for i in range(0, len(sequence)):
+            fskProduct1[i] = sequence[i] * sin(2 * pi * frequency1 * i / 1000)
+            fskProduct2[i] = sequence[i] * sin(2 * pi * frequency2 * i / 1000)
         for i in range(0, 10):
             S1 = 0
             S2 = 0
@@ -156,7 +162,7 @@ class Modulation:
                      [xSpectrumPsk, spectrum_sequence_psk], [x, sequenceFsk], [xSpectrumFsk, spectrum_sequence_fsk],
                      [x, sequenceAskNoise], [x, sequencePskNoise], [x, sequenceFskNoise], [x, askDemodulatedSignal],
                      [x, sequenceDemodulatedAsk], [x, pskDemodulatedSignal], [x, sequenceDemodulatedPsk],
-                     [x, fskDemodulatedSignal1], [x, fskDemodulatedSignal1], [x, sequence_demodulated_fsk]]
+                     [x, fskDemodulatedSignal1], [x, fskDemodulatedSignal2], [x, sequence_demodulated_fsk]]
         labels = [("Час, c", "Амплітуда сигналу", "Згенерована випадкова послідовність"),
                   ("Час, c", "Амплітуда сигналу", "Амплітудна модуляція"),
                   ("Частота, Гц", "Амплітуда спектру", "Спектр при амплітудній модуляції"),
@@ -172,7 +178,8 @@ class Modulation:
                   ("Час, c", "Амплітуда сигналу", "Демодульований сигнал з фазовою модуляцією"),
                   ("Час, c", "Амплітуда сигналу", "Демодульована послідовність з фазовою модуляцією"),
                   ("Час, c", "Амплітуда сигналу", "Демодульований сигнал 1 з частотною модуляцією"),
-                  ("Час, c", "Амплітуда сигналу", "Демодульований сигнал 2 з частотною модуляцією")]
+                  ("Час, c", "Амплітуда сигналу", "Демодульований сигнал 2 з частотною модуляцією"),
+                  ("Час, c", "Амплітуда сигналу", "Демодульована послідовність з частотною модуляцією")]
         for key, value in zip(sequences, labels):
             self.plot(key[0], key[1], value[0], value[1], value[2])
         errors = (self.noise_stress(sequence, sequenceAsk, "ASK", [self.ask]),
